@@ -1,0 +1,108 @@
+import random
+import time
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.age = 18
+        self.money = 500
+        self.health = 100
+        self.happiness = 100
+        self.energy = 100
+        self.alive = True
+
+    def status(self):
+        print("\n" + "="*30)
+        print(f" Name: {self.name} | Age: {self.age} years old")
+        print(f" Money: ${self.money}")
+        print(f" ❤️ Health: {self.health}%")
+        print(f" 😊 Happiness: {self.happiness}%")
+        print(f" ⚡ Energy: {self.energy}%")
+        print("="*30)
+
+    def trigger_event(self):
+        events = [
+            ("You found a $20 bill on the sidewalk!", "money", 20),
+            ("You ate some expired leftovers. Oof, your stomach hurts.", "health", -15),
+            ("You got a nice compliment from a stranger!", "happiness", 15),
+            ("Your phone screen cracked randomly. Bummer.", "money", -50),
+            ("Nothing interesting happened today. Just a peaceful day.", None, 0)
+        ]
+        
+        event, stat, val = random.choice(events)
+        print(f"\n[EVENT] {event}")
+        
+        if stat == "money":
+            self.money += val
+        elif stat == "health":
+            self.health = max(0, min(100, self.health + val))
+        elif stat == "happiness":
+            self.happiness = max(0, min(100, self.happiness + val))
+
+    def check_life(self):
+        if self.health <= 0:
+            print(f"\nOh no! {self.name} has passed away due to poor health...")
+            self.alive = False
+
+def main():
+    print("Welcome to LifeLines: Rewritten!")
+    player_name = input("Enter your character's name: ")
+    player = Player(player_name)
+
+    while player.alive:
+        player.status()
+        
+        print("\nWhat would you like to do today?")
+        print("1. Go to Work (Earn $100, lose 30 Energy)")
+        print("2. Relax and Play Games (Boost Happiness, cost 20 Energy)")
+        print("3. Sleep / Rest (Restore Energy to 100)")
+        print("4. Visit the Doctor (Restore Health to 100, cost $150)")
+        print("5. Quit Game")
+
+        choice = input("\nChoose an action (1-5): ").strip()
+
+        if choice == '1':
+            if player.energy < 30:
+                print("\nYou are too tired to work! You need to rest.")
+            else:
+                player.money += 100
+                player.energy -= 30
+                player.happiness = max(0, player.happiness - 5)
+                print("\nYou went to work and earned $100.")
+        
+        elif choice == '2':
+            if player.energy < 20:
+                print("\nYou're too exhausted to play games. Get some sleep!")
+            else:
+                player.happiness = min(100, player.happiness + 20)
+                player.energy -= 20
+                print("\nYou relaxed and played some video games. You feel happier!")
+
+        elif choice == '3':
+            player.energy = 100
+            print("\nYou got a good night's sleep. Energy fully restored!")
+
+        elif choice == '4':
+            if player.money < 150:
+                print("\nYou don't have enough money for the doctor ($150 required)!")
+            else:
+                player.money -= 150
+                player.health = 100
+                print("\nYou visited the doctor. Your health is fully checked and restored!")
+
+        elif choice == '5':
+            print("\nThanks for playing LifeLines!")
+            break
+        else:
+            print("\nInvalid choice. Please pick between 1 and 5.")
+            continue
+
+        # Trigger a random daily event and age up slightly per turn
+        player.trigger_event()
+        player.age += 1
+        player.check_life()
+
+        time.sleep(1)
+
+if __name__ == "__main__":
+    main()
